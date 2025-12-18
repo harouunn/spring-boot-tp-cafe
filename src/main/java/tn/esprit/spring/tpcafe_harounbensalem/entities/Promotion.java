@@ -29,11 +29,12 @@ public class Promotion {
     String pourcentagePromo;
 
 
-    LocalDate dateDebutPromotion;
+    LocalDate dateDebutPromo;
 
 
-    LocalDate dateFinPromotion;
+    LocalDate dateFinPromo;
 
     @ManyToMany(mappedBy = "promotions")
-    List<Article> articles ;
+    List<Article> articles;
+
 }

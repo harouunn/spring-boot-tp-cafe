@@ -1,63 +1,188 @@
 package tn.esprit.spring.tpcafe_harounbensalem.restcontrollers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.spring.tpcafe_harounbensalem.dto.Client.ClientRequest;
+import tn.esprit.spring.tpcafe_harounbensalem.dto.Client.ClientResponse;
+import tn.esprit.spring.tpcafe_harounbensalem.entities.Adresse;
 import tn.esprit.spring.tpcafe_harounbensalem.entities.Client;
-import tn.esprit.spring.tpcafe_harounbensalem.services.IClientService;
+import tn.esprit.spring.tpcafe_harounbensalem.entities.TypeArticle;
+import tn.esprit.spring.tpcafe_harounbensalem.services.Client.IClientService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("Client")
+@RequestMapping("client")
+@Tag(name = "Client", description = "Gestion des Clients")
+@AllArgsConstructor
 public class ClientRestController {
-    private IClientService ClientService;
+
+    private IClientService clientService;
 
     @PostMapping
-    public Client addClient(Client c) {
-        return ClientService.addClient(c);
+    public ClientResponse addClient(@RequestBody ClientRequest clientRequest) {
+        return clientService.addClient(clientRequest);
     }
 
-    @PostMapping
-    public List<Client> saveClient(List<Client> Clients) {
-        return ClientService.saveClient(Clients);
+    @PostMapping("/clients")
+    public List<ClientResponse> saveClients(@RequestBody List<ClientRequest> requests) {
+        return clientService.saveClients(requests);
     }
 
-    @GetMapping
-    public Client selectClientByIdWithGet(Long id) {
-        return ClientService.selectClientByIdWithGet(id);
-    }
-
-    @GetMapping
-    public Client selectClientByIdWithOrElse(Long id) {
-        return ClientService.selectClientByIdWithOrElse(id);
+    @GetMapping("/{id}")
+    public ClientResponse getClient(@PathVariable long id) {
+        return clientService.selectClientById(id);
     }
 
     @GetMapping
-    public List<Client> selectAllClients() {
-        return ClientService.selectAllClients();
+    public List<ClientResponse> getAllClients() {
+        return clientService.selectAllClient();
     }
 
-    @DeleteMapping
-    public void deleteClient(Client c) {
-        ClientService.deleteClient(c);
+    @GetMapping("/exists/{id}")
+    public boolean exists(@PathVariable long id) {
+        return clientService.verifClientById(id);
     }
 
-    @DeleteMapping
-    public void deleteAllClients() {
-        ClientService.deleteAllClients();
+    @GetMapping("/count")
+    public long count() {
+        return clientService.countClient();
     }
 
-    @DeleteMapping
-    public void deleteClientById(long id) {
-        ClientService.deleteClientById(id);
+    @PutMapping("/{id}")
+    public ClientResponse updateClient(@PathVariable long id, @RequestBody ClientRequest clientRequest) {
+        return clientService.updateClient(id, clientRequest);
     }
 
-    @GetMapping
-    public long countingClients() {
-        return ClientService.countingClients();
+    @DeleteMapping("/{id}")
+    public void deleteClient(@PathVariable long id) {
+        clientService.deleteClientById(id);
+    }
+    @PostMapping("/addAdresseToClient")
+    public void ajouterEtAffecterAdresseAClient(@RequestBody Adresse ad,@RequestBody Client c){
+        clientService.ajouterEtAffecterAdresseAClient(ad,c);
     }
 
-    @GetMapping
-    public boolean verifClientById(long id) {
-        return ClientService.verifClientById(id);
+    @DeleteMapping("/all")
+    public void deleteAll() {
+        clientService.deleteAllClient();
     }
+
+    @GetMapping("/search/byNom/{nom}")
+    public List<ClientResponse> getByNom(@PathVariable String nom) {
+        return clientService.findByNom(nom);
+    }
+
+    @GetMapping("/search/byPrenom/{prenom}")
+    public List<ClientResponse> getByPrenom(@PathVariable String prenom) {
+        return clientService.findByPrenom(prenom);
+    }
+
+    @GetMapping("/search/byNomAndPrenom")
+    public ClientResponse getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
+        return clientService.findByNomAndPrenom(nom, prenom);
+    }
+
+    @GetMapping("/search/existsByNom/{nom}")
+    public boolean existsByNom(@PathVariable String nom) {
+        return clientService.existsByNom(nom);
+    }
+
+    @GetMapping("/search/countBornAfter")
+    public long countBornAfter(@RequestParam String date) {
+        return clientService.countBornAfter(LocalDate.parse(date));
+    }
+
+    @GetMapping("/search/nameContains")
+    public List<ClientResponse> findNomOrPrenomContains(@RequestParam String str) {
+        return clientService.findNomOrPrenomContains(str);
+    }
+
+    @GetMapping("/search/nameAndSurnameContains")
+    public List<ClientResponse> findNomAndPrenomContains(@RequestParam String str) {
+        return clientService.findNomAndPrenomContains(str);
+    }
+
+    @GetMapping("/search/bornBetween")
+    public List<ClientResponse> bornBetween(@RequestParam String start, @RequestParam String end) {
+        return clientService.bornBetween(LocalDate.parse(start), LocalDate.parse(end));
+    }
+
+    @GetMapping("/search/nameStartsBeforeDate")
+    public List<ClientResponse> findNomStartsBeforeDate(@RequestParam String prefix,
+                                                        @RequestParam String date) {
+        return clientService.findNomStartsBeforeDate(prefix, LocalDate.parse(date));
+    }
+
+    @GetMapping("/search/byVille")
+    public List<ClientResponse> findByVille(@RequestParam String ville) {
+        return clientService.findByVille(ville);
+    }
+
+    @GetMapping("/search/nameContainsOrderAsc")
+    public List<ClientResponse> findNomContainsOrderAsc(@RequestParam String str) {
+        return clientService.findNomContainsOrderAsc(str);
+    }
+
+    @GetMapping("/search/nameContainsOrderDesc")
+    public List<ClientResponse> findNomContainsOrderDesc(@RequestParam String str) {
+        return clientService.findNomContainsOrderDesc(str);
+    }
+
+    @GetMapping("/search/nameStartsWith")
+    public List<ClientResponse> findNomStartsWith(@RequestParam String prefix) {
+        return clientService.findNomStartsWith(prefix);
+    }
+
+    @GetMapping("/search/surnameEndsWith")
+    public List<ClientResponse> findPrenomEndsWith(@RequestParam String suffix) {
+        return clientService.findPrenomEndsWith(suffix);
+    }
+
+    @GetMapping("/search/noDateNaissance")
+    public List<ClientResponse> findNoDateNaissance() {
+        return clientService.findNoDateNaissance();
+    }
+
+    @GetMapping("/search/hasAdresse")
+    public List<ClientResponse> findAdresseNotNull() {
+        return clientService.findAdresseNotNull();
+    }
+
+    @GetMapping("/search/byVilles")
+    public List<ClientResponse> findByVilles(@RequestParam List<String> villes) {
+        return clientService.findByVilles(villes);
+    }
+
+    @GetMapping("/search/pointsGreater")
+    public List<ClientResponse> findByPointsGreater(@RequestParam int pts) {
+        return clientService.findByPointsGreater(pts);
+    }
+
+    @GetMapping("/search/pointsGreaterOrEqual")
+    public List<ClientResponse> findByPointsGreaterOrEqual(@RequestParam int pts) {
+        return clientService.findByPointsGreaterOrEqual(pts);
+    }
+
+    @GetMapping("/search/pointsBetween")
+    public List<ClientResponse> findPointsBetween(@RequestParam int min, @RequestParam int max) {
+        return clientService.findPointsBetween(min, max);
+    }
+
+    @GetMapping("/search/orderedArticle")
+    public List<ClientResponse> orderedArticle(@RequestParam String article) {
+        return clientService.orderedArticle(article);
+    }
+
+    @GetMapping("/search/nameContainsOrderedType")
+    public List<ClientResponse> nameContainsAndOrderedType(@RequestParam String str,
+                                                           @RequestParam TypeArticle type) {
+        return clientService.nameContainsAndOrderedType(str, type);
+    }
+
+
+
+
 }

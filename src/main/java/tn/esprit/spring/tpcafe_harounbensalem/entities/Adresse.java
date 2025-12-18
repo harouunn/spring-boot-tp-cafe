@@ -27,6 +27,8 @@ public class Adresse {
     String ville;
 
     @Column(name = "code_postal")
-    String codePostal;
+    int codePostal;
+
+
 }
 

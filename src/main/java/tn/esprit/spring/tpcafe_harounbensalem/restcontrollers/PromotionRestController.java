@@ -1,63 +1,148 @@
 package tn.esprit.spring.tpcafe_harounbensalem.restcontrollers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.spring.tpcafe_harounbensalem.entities.Promotion;
-import tn.esprit.spring.tpcafe_harounbensalem.services.IPromotionService;
+import tn.esprit.spring.tpcafe_harounbensalem.dto.Promotion.PromotionRequest;
+import tn.esprit.spring.tpcafe_harounbensalem.dto.Promotion.PromotionResponse;
+import tn.esprit.spring.tpcafe_harounbensalem.services.Promotion.IPromotionService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("Promotion")
+@RequestMapping("promotion")
+@Tag(name = "Promotion", description = "Gestion des Promotions")
+@AllArgsConstructor
 public class PromotionRestController {
-    private IPromotionService PromotionService;
+
+    private IPromotionService promotionService;
 
     @PostMapping
-    public Promotion addPromotion(Promotion p) {
-        return PromotionService.addPromotion(p);
+    public PromotionResponse addPromotion(@RequestBody PromotionRequest promotionRequest) {
+        return promotionService.addPromotion(promotionRequest);
     }
 
-    @PostMapping
-    public List<Promotion> savePromotion(List<Promotion> Promotions) {
-        return PromotionService.savePromotion(Promotions);
-    }
-
-    @GetMapping
-    public Promotion selectPromotionByIdWithGet(Long id) {
-        return PromotionService.selectPromotionByIdWithGet(id);
+    @GetMapping("/{id}")
+    public PromotionResponse getPromotion(@PathVariable long id) {
+        return promotionService.selectPromotionById(id);
     }
 
     @GetMapping
-    public Promotion selectPromotionByIdWithOrElse(Long id) {
-        return PromotionService.selectPromotionByIdWithOrElse(id);
+    public List<PromotionResponse> getAllPromotions() {
+        return promotionService.selectAllPromotions();
     }
 
-    @GetMapping
-    public List<Promotion> selectAllPromotions() {
-        return PromotionService.selectAllPromotions();
+    @GetMapping("/exists/{id}")
+    public boolean exists(@PathVariable long id) {
+        return promotionService.verifPromotionById(id);
     }
 
-    @DeleteMapping
-    public void deletePromotion(Promotion p) {
-        PromotionService.deletePromotion(p);
+    @GetMapping("/count")
+    public long count() {
+        return promotionService.countPromotions();
     }
 
-    @DeleteMapping
-    public void deleteAllPromotions() {
-        PromotionService.deleteAllPromotions();
+    @PutMapping("/{id}")
+    public PromotionResponse updatePromotion(@PathVariable long id, @RequestBody PromotionRequest promotionRequest) {
+        return promotionService.updatePromotion(id, promotionRequest);
     }
 
-    @DeleteMapping
-    public void deletePromotionById(long id) {
-        PromotionService.deletePromotionById(id);
+    @DeleteMapping("/{id}")
+    public void deletePromotion(@PathVariable long id) {
+        promotionService.deletePromotionById(id);
     }
 
-    @GetMapping
-    public long countingPromotions() {
-        return PromotionService.countingPromotions();
+    @DeleteMapping("/all")
+    public void deleteAll() {
+        promotionService.deleteAllPromotions();
     }
 
-    @GetMapping
-    public boolean verifPromotionById(long id) {
-        return PromotionService.verifPromotionById(id);
+
+    @PutMapping("/{idPromo}/article/{idArticle}")
+    public void affecterPromotionAArticle(@PathVariable long idArticle, @PathVariable long idPromo) {
+        promotionService.affecterPromotionAArticle(idArticle, idPromo);
     }
+
+
+    @PutMapping("/{idPromo}/remove-article/{idArticle}")
+    public void desaffecterPromotionDUnArticle(@PathVariable long idArticle, @PathVariable long idPromo) {
+        promotionService.desaffecterPromotionDUnArticle(idArticle, idPromo);
+    }
+
+    // 🔥 SQL NATIVE - 14 MÉTHODES
+
+    @GetMapping("/pourcentage/{p}")
+    public List<PromotionResponse> getByPourcentageExact(@PathVariable int p) {
+        return promotionService.findByPourcentageExact(p);
+    }
+
+    @GetMapping("/datedebut/{date}")
+    public List<PromotionResponse> getByDateDebut(@PathVariable LocalDate date) {
+        return promotionService.findByDateDebut(date);
+    }
+
+    @GetMapping("/datefin/{date}")
+    public List<PromotionResponse> getByDateFin(@PathVariable LocalDate date) {
+        return promotionService.findByDateFin(date);
+    }
+
+    @GetMapping("/exists/pourcentage/{p}")
+    public boolean existsPourcentage(@PathVariable int p) {
+        return promotionService.existsByPourcentage(p);
+    }
+
+    @GetMapping("/count/after/{date}")
+    public long countDateAfter(@PathVariable LocalDate date) {
+        return promotionService.countDateDebutAfter(date);
+    }
+
+    @GetMapping("/active/{date}")
+    public List<PromotionResponse> getActiveAt(@PathVariable LocalDate date) {
+        return promotionService.findActiveAt(date);
+    }
+
+    @GetMapping("/period")
+    public List<PromotionResponse> getPercentInPeriod(
+            @RequestParam int p,
+            @RequestParam LocalDate d1,
+            @RequestParam LocalDate d2) {
+        return promotionService.findByPourcentageInPeriod(p, d1, d2);
+    }
+
+    @GetMapping("/valid/{date}")
+    public List<PromotionResponse> getValidAt(@PathVariable LocalDate date) {
+        return promotionService.findValidAt(date);
+    }
+
+    @GetMapping("/pourcentages")
+    public List<PromotionResponse> getByPourcentages(@RequestParam List<Integer> list) {
+        return promotionService.findByPourcentages(list);
+    }
+
+    @GetMapping("/active/order")
+    public List<PromotionResponse> getActiveOrdered() {
+        return promotionService.findActiveOrderedByPourcentage();
+    }
+
+    @GetMapping("/noend")
+    public List<PromotionResponse> getWithoutEnd() {
+        return promotionService.findWithoutEndDate();
+    }
+
+    @GetMapping("/pourcentage/notnull")
+    public List<PromotionResponse> getPctNotNull() {
+        return promotionService.findPourcentageNotNull();
+    }
+
+    @GetMapping("/withArticles")
+    public List<PromotionResponse> getWithArticles() {
+        return promotionService.findWithArticles();
+    }
+
+    @GetMapping("/expired")
+    public List<PromotionResponse> getExpired() {
+        return promotionService.findExpired();
+    }
+
 }

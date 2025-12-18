@@ -30,7 +30,7 @@ public class Client {
     @Column(name = "date_naissance")
     LocalDate dateNaissance;
     @OneToOne
-    Adresse adress;
+    Adresse adresse;
     @OneToOne
     CarteFidelite carte;
     @OneToMany(mappedBy = "client")

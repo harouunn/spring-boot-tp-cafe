@@ -26,13 +26,13 @@ public class CarteFidelite {
     long idCarteFidelite;
 
     @Column
-    int pointAccumules;
-
+    int pointsAccumules;
 
     LocalDate dateCreation;
 
     @OneToOne (mappedBy ="carte") /*le mot carte dans mapped by est le meme dans la classe client*/
             Client client;
+
 
 
 }
