@@ -17,7 +17,7 @@ spec:
         - name: spring
           image: harouuun/tpspringboot:latest
           ports:
-            - containerPort: 8089
+            - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:mysql://mysql-service:3306/tpcafe
@@ -36,6 +36,6 @@ spec:
   selector:
     app: spring
   ports:
-    - port: 8089
-      targetPort: 8089
+    - port: 8080
+      targetPort: 8080
       nodePort: 30080
